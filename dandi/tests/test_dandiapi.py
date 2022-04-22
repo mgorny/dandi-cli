@@ -605,6 +605,36 @@ def test_get_assets_with_path_prefix(text_dandiset: SampleDandiset) -> None:
     ] == ["subdir2/coconut.txt", "subdir2/banana.txt", "subdir1/apple.txt"]
 
 
+def test_get_assets_by_glob(text_dandiset: SampleDandiset) -> None:
+    assert sorted(
+        asset.path for asset in text_dandiset.dandiset.get_assets_by_glob("*a*.txt")
+    ) == ["subdir1/apple.txt", "subdir2/banana.txt"]
+    assert [
+        asset.path
+        for asset in text_dandiset.dandiset.get_assets_by_glob("*a*.txt", order="path")
+    ] == ["subdir1/apple.txt", "subdir2/banana.txt"]
+    assert [
+        asset.path
+        for asset in text_dandiset.dandiset.get_assets_by_glob("*a*.txt", order="-path")
+    ] == ["subdir2/banana.txt", "subdir1/apple.txt"]
+
+
+def test_get_assets_by_regex(text_dandiset: SampleDandiset) -> None:
+    assert sorted(
+        asset.path for asset in text_dandiset.dandiset.get_assets_by_glob(r"e\.txt$")
+    ) == ["file.txt", "subdir1/apple.txt"]
+    assert [
+        asset.path
+        for asset in text_dandiset.dandiset.get_assets_by_glob(r"e\.txt$", order="path")
+    ] == ["file.txt", "subdir1/apple.txt"]
+    assert [
+        asset.path
+        for asset in text_dandiset.dandiset.get_assets_by_glob(
+            r"e\.txt$", order="-path"
+        )
+    ] == ["subdir1/apple.txt", "file.txt"]
+
+
 def test_empty_zarr_iterfiles(new_dandiset: SampleDandiset) -> None:
     client = new_dandiset.client
     r = client.post(
